@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HemoScan Pro - Blood Sample Analysis</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --blood-red: #8a0303;
+            --blood-dark: #5e0000;
+            --blood-light: #c1121f;
+            --blood-accent: #e5383b;
+            --parchment: #f5f1e6;
+            --parchment-dark: #e8e4d9;
+            --gold: #c0a062;
+            --gold-light: #d4b87a;
+            --ink: #1a1a1a;
+            --ink-light: #3d3d3d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Lora', serif;
+            background-color: var(--parchment);
+            color: var(--ink);
+            line-height: 1.7;
+            background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Classical Header with Blood Cells Background */
+        header {
+            text-align: center;
+            padding: 60px 0 50px;
+            background: 
+                linear-gradient(rgba(138, 3, 3, 0.85), rgba(94, 0, 0, 0.9)),
+                url('https://www.transparenttextures.com/patterns/blood-cells.png');
+            color: var(--parchment);
+            margin-bottom: 40px;
+            position: relative;
+            border-bottom: 8px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(94, 0, 0, 0.3);
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40"><path d="M0,0 Q100,40 200,0" fill="%23c0a062" stroke="none"/></svg>') center/cover no-repeat;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            font-style: italic;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        /* Antique Paper Style Main Card */
+        .main-card {
+            background-color: var(--parchment);
+            border-radius: 4px;
+            padding: 50px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 50px;
+            position: relative;
+            border: 1px solid var(--gold);
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+        }
+        
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid rgba(192, 160, 98, 0.3);
+            pointer-events: none;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--blood-red), var(--gold), var(--blood-red));
+        }
+        
+        /* Elegant File Upload */
+        .file-input-wrapper {
+            position: relative;
+            margin: 40px auto;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .file-input {
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
+        }
+        
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--gold);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(245, 241, 230, 0.7);
+            text-align: center;
+            min-height: 200px;
+        }
+        
+        .file-input-label:hover {
+            border-color: var(--blood-red);
+            background-color: rgba(138, 3, 3, 0.05);
+        }
+        
+        .file-input-icon {
+            font-size: 3rem;
+            color: var(--blood-red);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover .file-input-icon {
+            transform: scale(1.1);
+            color: var(--blood-dark);
+        }
+        
+        .file-input-text {
+            font-size: 1.1rem;
+            color: var(--ink-light);
+            margin-bottom: 10px;
+        }
+        
+        .file-input-subtext {
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+        
+        .file-input-name {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: var(--blood-red);
+            font-weight: 600;
+            display: none;
+        }
+        
+        /* Ornate Button */
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(var(--blood-red), var(--blood-dark));
+            color: var(--parchment);
+            border: none;
+            border-radius: 0;
+            font-size: 1.1rem;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(138, 3, 3, 0.3);
+            border: 1px solid var(--blood-dark);
+            text-transform: uppercase;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(var(--blood-light), var(--blood-red));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(138, 3, 3, 0.4);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(var(--gold), var(--gold-light));
+            color: var(--ink);
+            box-shadow: 0 5px 15px rgba(192, 160, 98, 0.3);
+            border: 1px solid var(--gold-light);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(var(--gold-light), var(--gold));
+        }
+        
+        /* Blood Drop Styled Result */
+        .result-section {
+            text-align: center;
+            padding: 40px;
+            margin: 50px auto;
+            border-radius: 4px;
+            background-color: rgba(138, 3, 3, 0.05);
+            display: none;
+            position: relative;
+            max-width: 500px;
+            border-top: 3px solid var(--blood-red);
+            border-bottom: 3px solid var(--blood-red);
+        }
+        
+        .result-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0,0 Q50,10 100,0" fill="%238a0303" stroke="none"/></svg>') top/100% 100% no-repeat;
+        }
+        
+        .result-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0,10 Q50,0 100,10" fill="%238a0303" stroke="none"/></svg>') bottom/100% 100% no-repeat;
+        }
+        
+        .result-title {
+            font-size: 1.3rem;
+            color: var(--ink-light);
+            margin-bottom: 20px;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .result-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--blood-red);
+            font-family: 'Cinzel', serif;
+            margin: 20px 0;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .result-value::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+        }
+        
+        .confidence {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: var(--ink-light);
+            font-style: italic;
+        }
+        
+        .compatibility {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(192, 160, 98, 0.1);
+            border-left: 3px solid var(--gold);
+            text-align: left;
+        }
+        
+        .compatibility-title {
+            font-weight: 700;
+            color: var(--blood-dark);
+            margin-bottom: 8px;
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* Blood Type Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .info-card {
+            background-color: var(--parchment);
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--parchment-dark);
+            text-align: center;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--blood-red);
+        }
+        
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(138, 3, 3, 0.1);
+            border-color: var(--gold);
+        }
+        
+        .info-card-icon {
+            font-size: 2.5rem;
+            color: var(--blood-red);
+            margin-bottom: 20px;
+        }
+        
+        .info-card-title {
+            font-size: 1.4rem;
+            color: var(--blood-dark);
+            margin-bottom: 15px;
+            font-family: 'Cinzel', serif;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .info-card-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--gold);
+        }
+        
+        .info-card-content {
+            font-size: 1rem;
+            color: var(--ink-light);
+        }
+        
+        /* Ancient Scroll Inspired Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--parchment);
+            margin: 5% auto;
+            padding: 50px;
+            border-radius: 4px;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFadeIn 0.5s ease;
+            border: 1px solid var(--gold);
+            background-image: url('https://www.transparenttextures.com/patterns/paper.png');
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: var(--gold);
+            cursor: pointer;
+            transition: color 0.3s;
+            background: var(--blood-red);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: var(--parchment);
+            border: 2px solid var(--parchment);
+        }
+        
+        .close-modal:hover {
+            color: white;
+            background: var(--blood-dark);
+        }
+        
+        .modal-title {
+            font-size: 2.5rem;
+            color: var(--blood-dark);
+            margin-bottom: 30px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            position: relative;
+        }
+        
+        .modal-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--blood-red), transparent);
+        }
+        
+        .blood-group-info {
+            margin-bottom: 40px;
+        }
+        
+        .blood-type {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--gold);
+        }
+        
+        .blood-type-title {
+            font-weight: 700;
+            width: 100px;
+            color: var(--blood-red);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+        }
+        
+        .blood-type-desc {
+            flex: 1;
+            text-align: left;
+        }
+        
+        /* Footer with Blood Drop Decoration */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 50px;
+            color: var(--ink-light);
+            font-size: 0.9rem;
+            position: relative;
+            background-color: var(--parchment-dark);
+            border-top: 1px solid var(--gold);
+        }
+        
+        footer::before {
+            content: '🩸';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            background: var(--parchment);
+            width: 60px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 5px var(--parchment);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 0 15px;
+            }
+            
+            .main-card {
+                padding: 30px 20px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .blood-type {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .blood-type-title {
+                margin-bottom: 10px;
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HemoScan Pro</h1>
+            <p class="tagline">Advanced blood sample analysis through computer vision</p>
+        </header>
+        
+        <div class="main-card">
+            <h2 class="section-title">Blood Sample Analysis</h2>
+            
+            <div class="upload-section">
+                <p style="text-align: center; max-width: 700px; margin: 0 auto 30px;">
+                    Our hematological analysis system uses deep learning to identify blood group antigens 
+                    from microscopic blood sample images. Upload a clear image of a blood sample for analysis.
+                </p>
+                
+                <div class="file-input-wrapper">
+                    <input type="file" id="bloodSampleInput" class="file-input" accept="image/*">
+                    <label for="bloodSampleInput" class="file-input-label">
+                        <div class="file-input-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="file-input-text">Select Blood Sample Image</div>
+                        <div class="file-input-subtext">JPEG or PNG format recommended</div>
+                        <div id="fileName" class="file-input-name"></div>
+                    </label>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button id="analyzeButton" class="btn">
+                        <i class="fas fa-microscope" style="margin-right: 10px;"></i> Analyze Sample
+                    </button>
+                </div>
+                
+                <div id="resultSection" class="result-section">
+                    <p class="result-title">Blood Analysis Results</p>
+                    <p id="resultValue" class="result-value">-</p>
+                    <p id="confidence" class="confidence">Confidence: -</p>
+                    <div id="compatibility" class="compatibility" style="display: none;">
+                        <div class="compatibility-title">Compatibility:</div>
+                        <div id="compatibilityInfo"></div>
+                    </div>
+                    <div style="margin-top: 30px;">
+                        <button id="reportButton" class="btn btn-secondary" style="padding: 10px 25px; font-size: 0.9rem;">
+                            <i class="fas fa-book-medical" style="margin-right: 8px;"></i> View Full Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3 class="section-title">Blood Type Science</h3>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h4 class="info-card-title">ABO System</h4>
+                        <p class="info-card-content">
+                            The ABO blood group system classifies blood into four main types (A, B, AB, O) 
+                            based on the presence or absence of antigens on red blood cells.
+                        </p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-dna"></i>
+                        </div>
+                        <h4 class="info-card-title">Rh Factor</h4>
+                        <p class="info-card-content">
+                            The Rh factor (positive or negative) is another important antigen that affects 
+                            blood compatibility, especially important during pregnancy.
+                        </p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h4 class="info-card-title">Clinical Importance</h4>
+                        <p class="info-card-content">
+                            Correct blood typing is crucial for safe transfusions, organ transplants, 
+                            and managing pregnancy complications.
+                        </p>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px;">
+                    <button id="infoButton" class="btn btn-secondary">
+                        <i class="fas fa-book" style="margin-right: 10px;"></i> Blood Type Reference Guide
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 class="modal-title">Blood Type Reference Guide</h3>
+            
+            <div class="blood-group-info">
+                <p style="text-align: center; margin-bottom: 30px; font-style: italic;">
+                    "The life is in the blood." — Leviticus 17:11
+                </p>
+                
+                <h4 style="color: var(--blood-red); margin-bottom: 20px; font-family: 'Cinzel', serif; text-align: center;">
+                    <i class="fas fa-tint" style="margin-right: 10px;"></i> Blood Type Characteristics
+                </h4>
+                
+                <div class="blood-type">
+                    <div class="blood-type-title">Type A</div>
+                    <div class="blood-type-desc">
+                        Contains A antigens on red cells and B antibodies in plasma. Most common in Europe 
+                        (about 40% of population). Associated with higher cortisol levels and better 
+                        adaptation to agricultural diets.
+                    </div>
+                </div>
+                
+                <div class="blood-type">
+                    <div class="blood-type-title">Type B</div>
+                    <div class="blood-type-desc">
+                        Contains B antigens and A antibodies. More common in Asia (up to 25% in some regions). 
+                        Some studies suggest higher susceptibility to certain infections but better resistance 
+                        to others like E. coli.
+                    </div>
+                </div>
+                
+                <div class="blood-type">
+                    <div class="blood-type-title">Type AB</div>
+                    <div class="blood-type-desc">
+                        Contains both A and B antigens but no antibodies. The rarest blood type (about 5% 
+                        globally). AB+ is the universal recipient for plasma transfusions. Some research 
+                        suggests higher risk for certain cancers but lower risk for others.
+                    </div>
+                </div>
+                
+                <div class="blood-type">
+                    <div class="blood-type-title">Type O</div>
+                    <div class="blood-type-desc">
+                        No A or B antigens but both antibodies. Most common worldwide (about 45%). O- is the 
+                        universal donor for red blood cells. Associated with lower risk of heart disease but 
+                        higher risk for ulcers and fertility issues.
+                    </div>
+                </div>
+                
+                <h4 style="color: var(--blood-red); margin: 40px 0 20px; font-family: 'Cinzel', serif; text-align: center;">
+                    <i class="fas fa-exchange-alt" style="margin-right: 10px;"></i> Blood Type Compatibility
+                </h4>
+                
+                <div style="background: rgba(138, 3, 3, 0.05); padding: 20px; border-left: 3px solid var(--blood-red); margin-bottom: 30px;">
+                    <p style="font-weight: 700; color: var(--blood-dark); margin-bottom: 10px;">Universal Donor:</p>
+                    <p>O- can donate red blood cells to all blood types</p>
+                    
+                    <p style="font-weight: 700; color: var(--blood-dark); margin: 15px 0 10px;">Universal Recipient:</p>
+                    <p>AB+ can receive red blood cells from all blood types</p>
+                    
+                    <p style="font-weight: 700; color: var(--blood-dark); margin: 15px 0 10px;">Plasma Donation:</p>
+                    <p>AB is the universal plasma donor, while O can only receive from other O types</p>
+                </div>
+                
+                <h4 style="color: var(--blood-red); margin-bottom: 20px; font-family: 'Cinzel', serif; text-align: center;">
+                    <i class="fas fa-history" style="margin-right: 10px;"></i> Global Distribution
+                </h4>
+                
+                <p style="margin-bottom: 20px;">
+                    Blood type distribution varies significantly across different populations and ethnic groups, 
+                    reflecting human migration patterns and evolutionary adaptations to different environments 
+                    and disease pressures.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 HemoScan Pro. All rights reserved.</p>
+        <p style="margin-top: 10px; font-style: italic;">
+            "Every drop of blood tells a story."
+        </p>
+    </footer>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded - attaching event listeners');
+        
+        try {
+            // Get all elements with null checks
+            const getElement = (id) => {
+                const el = document.getElementById(id);
+                if (!el) console.error(`Element #${id} not found`);
+                return el;
+            };
+    
+            const fileInput = getElement('bloodSampleInput');
+            const fileName = getElement('fileName');
+            const analyzeButton = getElement('analyzeButton');
+            const resultSection = getElement('resultSection');
+            const resultValue = getElement('resultValue');
+            const confidence = getElement('confidence');
+            const compatibility = getElement('compatibility');
+            const compatibilityInfo = getElement('compatibilityInfo');
+            const infoButton = getElement('infoButton');
+            const infoModal = getElement('infoModal');
+            const closeModal = document.querySelector('.close-modal');
+            const reportButton = getElement('reportButton');
+    
+            if (!closeModal) console.error('closeModal not found');
+    
+            // File input handling
+            if (fileInput && fileName) {
+                fileInput.addEventListener('change', function(e) {
+                    if (this.files && this.files[0]) {
+                        fileName.textContent = this.files[0].name;
+                        fileName.style.display = 'block';
+                    }
+                });
+            }
+    
+            // Analyze button
+            if (analyzeButton) {
+                console.log('nfieafnei');
+                analyzeButton.addEventListener('click', async function() {
+                    if (!fileInput?.files?.[0]) {
+                        alert('Please select an image first');
+                        return;
+                    }
+    
+                    console.log('Starting analysis...');
+                    
+                    analyzeButton.disabled = true;
+                    analyzeButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                    
+                    if (resultSection) resultSection.style.display = 'none';
+    
+                    try {
+                        // Mock analysis for demonstration
+                        setTimeout(() => {
+                            if (resultValue) resultValue.textContent = 'A+';
+                            if (confidence) confidence.textContent = 'Confidence: 98%';
+                            if (compatibility) {
+                                compatibility.style.display = 'block';
+                                if (compatibilityInfo) {
+                                    compatibilityInfo.textContent = 'Can donate to: A+, AB+\nCan receive from: A+, A-, O+, O-';
+                                }
+                            }
+                            if (resultSection) resultSection.style.display = 'block';
+                            
+                            analyzeButton.disabled = false;
+                            analyzeButton.innerHTML = '<i class="fas fa-microscope" style="margin-right: 10px;"></i> Analyze Sample';
+                        }, 1500);
+                        
+                    } catch (error) {
+                        console.error('Analysis error:', error);
+                        alert('Analysis failed: ' + error.message);
+                        if (analyzeButton) {
+                            analyzeButton.disabled = false;
+                            analyzeButton.innerHTML = '<i class="fas fa-microscope" style="margin-right: 10px;"></i> Analyze Sample';
+                        }
+                    }
+                });
+            }
+    
+            // Modal handling
+            if (infoButton && infoModal) {
+                infoButton.addEventListener('click', function() {
+                    infoModal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+    
+            if (closeModal && infoModal) {
+                closeModal.addEventListener('click', function() {
+                    infoModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                });
+            }
+    
+            window.addEventListener('click', function(e) {
+                if (e.target === infoModal) {
+                    infoModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+    
+            // Report button
+            if (reportButton) {
+                reportButton.addEventListener('click', function() {
+                    alert('Full report feature coming soon!\nSample report for A+ blood type would appear here.');
+                });
+            }
+    
+        } catch (error) {
+            console.error('Initialization error:', error);
+        }
+    });
+</body>
+</html>
